@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/pennphoto" xmlns:tns="http://www.example.org/pennphoto" elementFormDefault="qualified">
+    
+    <complexType name="studentType">
+    	<complexContent>
+    		<extension base="tns:personType">
+    			<sequence>
+    				<element name="year" type="int"></element>
+    				<element name="major" type="string"></element>
+    				<element name="GPA" type="double"></element>
+    				<element name="advisor" type="int"></element>
+					<element name="academic_institution" type="string" minOccurs="1" default="University of Pennsylvania"></element>
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+
+    <complexType name="personType">
+    	<sequence>
+    		<element name="id" type="int"></element>
+    		<element name="first_name" type="string"></element>
+    		<element name="last_name" type="string"></element>
+    		<element name="email" type="string"></element>
+    		<element name="age" type="int"></element>
+    		<element name="gender" type="string"></element>
+    		<element name="account_id" type="string"></element>
+    		<element name="password" type="string"></element>
+			<element name="account_status" type="string" default="active"></element>
+    		<element name="photo" type="tns:photoType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="circle" type="tns:circleType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>	
+    		<element name="viewablePhoto" type="tns:viewablePhotoType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    	</sequence>
+    </complexType>
+
+
+    <complexType name="professorType">
+    	<complexContent>
+    		<extension base="tns:personType">
+    			<sequence>
+    				<element name="title" type="string" maxOccurs="1" minOccurs="0"></element>
+    				<element name="roomNumber" type="string"></element>
+    				<element name="researchArea" type="string"></element>
+    				<element name="advises" maxOccurs="unbounded">
+        				<complexType>
+          					<sequence>
+            					<element name="advisee" type="int"></element>
+						<element name="yearsAdvised" type="int"></element>
+          					</sequence>
+        				</complexType>
+      				</element>		
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+    
+ 
+    <complexType name="photoType">
+    	<sequence>
+    		<element name="photoID" type="int"></element>	
+    		<element name="url" type="string"></element>
+    		<element name="description" type="string" maxOccurs="1" minOccurs="0"></element>
+			<element name="upload_time" type="string"></element>
+    		<element name="rating" type="tns:ratingType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="tagging" type="tns:tagType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    	</sequence>
+    </complexType>
+
+
+    <complexType name="ratingType">
+    	<sequence>
+    		<element name="score" type="float"></element>
+    		<element name="rater" type="int"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="tagType">
+    	<sequence>
+    		<element name="tag" type="string"></element>
+    		<element name="tagger" type="int"></element>
+    	</sequence>
+    </complexType>
+    
+    
+    <complexType name="circleType">
+    	<sequence>
+    		<element name="name" type="string"></element>
+    		<element name="containsFriend" type="tns:containsFriendType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+	<complexType name="containsFriendType">
+    	<sequence>
+    		<element name="friend_id" type="int"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="viewablePhotoType">
+    	<sequence>
+    		<element name="photo_id" type="int"></element>
+    	</sequence>
+    </complexType>
+    
+    
+    <element name="photodb" type="tns:photodbType">
+    <!-- Add key & key reference here. -->
+    	<key name="friendId">
+    		<selector xpath=".//tns:photodb/*"/>
+    		<field xpath="tns:id"/>
+    	</key>
+    	<keyref name="friendIdRef" refer="tns:friendId">
+    		<selector xpath=".//tns:photodb/*/tns:circle/tns:containsFriend"/>
+    		<field xpath="tns:friend_id"/>
+    	</keyref>
+ 		    	
+		<key name="advisorId">
+    		<selector xpath=".//tns:photodb/tns:professor"/>
+    		<field xpath="tns:id"/>
+    	</key>
+    	<keyref name="advisorIdRef" refer="tns:advisorId">
+    		<selector xpath=".//tns:photodb/tns:student"/>
+    		<field xpath="tns:advisor"/>
+    	</keyref>
+
+		<key name="adviseeId">
+    		<selector xpath=".//tns:photodb/tns:student"/>
+    		<field xpath="tns:id"/>
+    	</key>
+    	<keyref name="adviseeIdRef" refer="tns:adviseeId">
+    		<selector xpath=".//tns:photodb/tns:professor/tns:advises"/>
+    		<field xpath="tns:advisee"/>
+    	</keyref>		
+
+
+    	<key name="raterId">
+    		<selector xpath=".//tns:photodb/*"/>
+    		<field xpath="tns:id"/>
+    	</key>
+    	<keyref name="raterIdRef" refer="tns:raterId">
+    		<selector xpath=".//tns:photo/tns:rating"/>
+    		<field xpath="tns:rater"/>
+    	</keyref>
+    	
+    	<key name="taggerId">
+    		<selector xpath=".//tns:photodb/*"/>
+    		<field xpath="tns:id"/>
+    	</key>
+    	<keyref name="taggerIdRef" refer="tns:taggerId">
+    		<selector xpath=".//tns:photo/tns:tagging"/>
+    		<field xpath="tns:tagger"/>
+    	</keyref>
+    	
+    	<key name="photoId">
+    		<selector xpath=".//tns:photo"/>
+    		<field xpath="tns:photoID"/>
+    	</key>
+    	<keyref name="photoIdRef" refer="tns:photoId">
+    		<selector xpath=".//tns:viewablePhoto"/>
+    		<field xpath="tns:photo_id"/>
+    	</keyref> 
+    </element>
+
+
+    <complexType name="photodbType">
+    	<sequence>
+    		<element name="student" type="tns:studentType" maxOccurs="unbounded" minOccurs="0"></element>	
+    		<element name="professor" type="tns:professorType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+    
+    
+</schema>

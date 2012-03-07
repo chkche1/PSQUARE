@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="http://www.example.org/NewXMLSchema" xmlns:tns="http://www.example.org/NewXMLSchema" 
+elementFormDefault="qualified">
+  <complexType name="studentType">
+				<sequence>
+					<element name="current_year" type="int"></element>
+					<element name="major" type="string"></element>
+					<element name="gpa" type="double"></element>
+					<element name="advisor_email" type="string"></element>
+					<element name = "advisor_id" type = "int" minOccurs = "0" maxOccurs = "1"></element>
+				</sequence>
+    </complexType>
+	
+    <complexType name="personType">
+    	<sequence>
+    		<element name="userID" type="int"></element>
+			<element name="first_name" type="string"></element>
+			<element name="last_name" type="string"></element>
+			<element name="email" type="string"></element>
+			<element name="birthdate" type="date" minOccurs="0" maxOccurs="1"></element>
+			<element name="gender" minOccurs="0" maxOccurs="1">
+			<simpleType>
+					<restriction base="string">
+						<enumeration value="M" />
+						<enumeration value="F" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="address" type="string" minOccurs="0" maxOccurs="1"></element>
+			<element name="institution" type="tns:institutionType" maxOccurs="unbounded"></element>    		
+			<element name="photo" type="tns:photoType"
+    			maxOccurs="unbounded" minOccurs="0">
+			</element>
+    		<element name="circle" type="tns:circleType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+			<element name="login" type="tns:loginType"></element>    		
+			<element name = "interest" type = "string" minOccurs ="0" maxOccurs = "unbounded"></element>
+			<element name="student" type="tns:studentType" minOccurs ="0" maxOccurs = "1"></element> 
+			<element name="professor" type="tns:professorType" minOccurs ="0" maxOccurs = "1"></element> 
+    	</sequence>
+    </complexType>
+
+    <complexType name="institutionType">
+    	<sequence>
+    		<element name="name" type="string"></element>
+    		<element name="start_year" type="int"></element>
+			<element name="end_year" type="int" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    
+    <complexType name="professorType">
+				<sequence>
+					<element name="room_no" type="string"></element>
+					<element name="research" type="string" minOccurs="0" maxOccurs="unbounded"></element>
+					<element name="title" type="string"></element>
+					<element name="adviseeID" type="int" minOccurs="0" maxOccurs="unbounded"></element>
+				</sequence>
+   	</complexType>
+    
+    <complexType name="photoType">
+    	<sequence>
+    		<element name="photoID" type="int"></element>
+			<element name="description" type="string" minOccurs="0"></element>
+			<element name="url" type="string"></element>
+    		<element name="rating" type="tns:ratingType" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="tag" type="tns:tagType" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="visibility" type="tns:visibleType" minOccurs = "0" maxOccurs = "1"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="ratingType">
+    	<sequence>
+    		<element name="score">
+				<simpleType>
+					<restriction base="integer">
+						<enumeration value="1" />
+						<enumeration value="2" />
+						<enumeration value="3" />
+						<enumeration value="4" />
+						<enumeration value="5" />
+					</restriction>
+				</simpleType>
+    		</element>
+    		<element name="rater" type="int"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="visibleType">
+    	<sequence>
+				<element name="userID" type="int" minOccurs="0" maxOccurs="unbounded"></element>
+				<element name="circleID" type="int" minOccurs="0" maxOccurs = "unbounded"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="tagType">
+    	<sequence>
+    		<element name="tag_description" type="string"></element>
+		<element name="tagger" type="int"></element>
+    	</sequence>
+    </complexType>
+
+
+    <complexType name="circleType">
+    	<sequence>
+    		<element name="cid" type="int"></element>
+    		<element name="cname" type="string"></element>
+    		<element name="containsFriend" type="int" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="loginType">
+    	<sequence>
+    		<element name="username" type="string"></element>
+    		<element name="password" type="string"></element>
+    	</sequence>
+    </complexType>
+
+
+    <element name="photodb" type="tns:photodbType">
+		<key name = "userID">
+			<selector xpath = "./tns:user" />
+			<field xpath = "tns:userID" />
+		</key>
+		<key name = "photoID">
+			<selector xpath = "./tns:user/tns:photo" />
+			<field xpath = "tns:photoID" />
+		</key>
+		<key name = "cid">
+			<selector xpath = "./tns:user/tns:circle" />
+			<field xpath = "tns:cid" />
+		</key>
+		<keyref name = "userID_1" refer = "tns:userID">
+			<selector xpath = "./tns:user/tns:photo/tns:rating/*" />
+			<field xpath = "tns:rater" />
+		</keyref>
+		<keyref name = "userID_3" refer = "tns:userID">
+			<selector xpath = "./tns:user/tns:photo/tns:tag/*" />
+			<field xpath = "tns:tagger" />
+		</keyref>
+		<keyref name = "userID_4" refer = "tns:userID">
+			<selector xpath = "./tns:user/tns:circle/*" />
+			<field xpath = "tns:containsFriend" />
+		</keyref>
+		<keyref name = "cid_1" refer = "tns:cid">
+			<selector xpath = "./tns:user/tns:photo/tns:visibility/*" />
+			<field xpath = "tns:circleID" />
+		</keyref>
+		<keyref name = "userID_5" refer = "tns:userID">
+			<selector xpath = "./tns:user/tns:photo/tns:visibility/*" />
+			<field xpath = "tns:userID" />
+		</keyref>
+		<keyref name = "userID_6" refer = "tns:userID">
+			<selector xpath = "./tns:user/student" />
+			<field xpath = "tns:advisor_id" />
+		</keyref>
+		<keyref name = "userID_2" refer = "tns:userID">
+			<selector xpath = "./tns:user/professor/*" />
+			<field xpath = "tns:adviseeID" />
+		</keyref>
+		<unique name = "unique_email">
+			<selector xpath = "./tns:user" />
+			<field xpath = "tns:email" />
+		</unique>
+		<unique name = "unique_username">
+			<selector xpath = "./tns:user/tns:login" />
+			<field xpath = "tns:username" />
+		</unique>
+	</element>
+    <complexType name="photodbType">
+    	<sequence>
+    		<element name="user" type="tns:personType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+</schema>

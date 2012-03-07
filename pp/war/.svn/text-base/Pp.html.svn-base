@@ -1,0 +1,119 @@
+<!doctype html>
+<!-- The DOCTYPE declaration above will set the     -->
+<!-- browser's rendering engine into                -->
+<!-- "Standards Mode". Replacing this declaration   -->
+<!-- with a "Quirks Mode" doctype is not supported. -->
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+
+    <title>Welcome to PSquare</title>
+    
+    <!--                                           -->
+    <!-- This script loads your compiled module.   -->
+    <!-- If you add any GWT meta tags, they must   -->
+    <!-- be added before this line.                -->
+    <!--                                           -->
+    <script type="text/javascript" language="javascript" src="pp/pp.nocache.js"></script>
+    
+    <!-- CSS Files -->
+	<link type="text/css" href="base.css" rel="stylesheet" />
+	<link type="text/css" href="Hypertree.css" rel="stylesheet" />
+
+    <link type="text/css" rel="stylesheet" href="Pp.css">
+
+
+	<!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
+
+	<!-- JIT Library File -->
+	<script language="javascript" type="text/javascript" src="jit.js"></script>
+    
+  </head>
+
+  <!--                                           -->
+  <!-- The body can have arbitrary html, or      -->
+  <!-- you can leave the body empty if you want  -->
+  <!-- to create a completely dynamic UI.        -->
+  <!--                                           -->
+  <body>
+
+    <!-- OPTIONAL: include this if you want history support -->
+    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+    
+    <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+    <noscript>
+      <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+        Your web browser must have JavaScript enabled
+        in order for this application to display correctly.
+      </div>
+    </noscript>
+
+	<div id="mainPage">
+		<div id="topDiv">
+			<div id="topBanner"><img src="titlepic.png" alt="Welcome to PSquare!"" />
+			</div>
+			<div id="updateContainer">Recent Updates:
+			</div>
+		</div> <!-- end topDiv -->
+		<div id="bottomDiv">
+			<div id="leftBar">
+			
+				<div id="infoGrid">
+				</div>
+				<div id="chatBox">
+					<div id="chatFlow"></div>
+					<div id="chatEnter"></div>
+				</div>
+			
+			
+			</div><!-- end left panel div -->
+			
+			<div id="rightTwoPanels">
+				<div id="centerPanel">
+					<div id="visualizerContainer">
+						<div id="infovis"></div>
+					</div>
+					
+					
+				
+				</div><!-- end center panel div -->
+				
+				<div id="rightBar">
+				
+					<div id="friendListContainer">
+						<div id="friendFlow"></div>
+						</div>
+					
+						<div id="recommendationContainer">
+						</div>
+				
+					<div id="photoPostContainer">
+					</div>
+					
+					<div id="tagFieldContainer">
+					</div>
+				
+					<div id="photoSearchContainer">
+					</div>
+				
+				</div><!-- end right bar div -->
+											
+			</div><!-- right two panels -->
+			
+		</div><!-- end bottom Panel div -->
+		<div id="clearfix"></div>
+	<!---	
+		-->
+	</div> <!-- end mainPage div -->
+	
+	<div id="photoDisplayContainer" >
+		</div>
+		
+	<div id="galleryButtons"></div>
+	
+	
+  </body>
+</html>

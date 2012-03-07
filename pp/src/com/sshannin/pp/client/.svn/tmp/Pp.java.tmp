@@ -1,0 +1,765 @@
+package com.sshannin.pp.client;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.sshannin.pp.client.stubs.ChatLink;
+import com.sshannin.pp.client.stubs.ChatLinkAsync;
+import com.sshannin.pp.client.stubs.DBRoutines;
+import com.sshannin.pp.client.stubs.DBRoutinesAsync;
+import com.sshannin.pp.client.stubs.PhotoSearch;
+import com.sshannin.pp.client.stubs.PhotoSearchAsync;
+import com.sshannin.pp.client.stubs.ServiceDispatcher;
+import com.sshannin.pp.client.stubs.ServiceDispatcherAsync;
+import com.sshannin.pp.client.stubs.XQRoutines;
+import com.sshannin.pp.client.stubs.XQRoutinesAsync;
+import com.sshannin.pp.client.PhotoPosting;
+import com.sshannin.pp.client.PhotoRate;
+import com.sshannin.pp.shared.FieldVerifier;
+
+/**
+ * Entry point classes define <code>onModuleLoad()</code>.
+ */
+public class Pp implements EntryPoint {
+	// Global User info
+	Integer uid;
+	String f_name;
+	String l_name;
+	String dob;
+	String email;
+	String gender;
+	String addr;
+	LinkedList<String> institutions;
+	HashMap<String, String> attributes;
+	LinkedList<String> advisees;
+	PhotoPosting posting;
+	PhotoRate rating;
+	LinkedList<Pic> pictures;
+
+	// Info Grid
+	private Grid info;
+	private final static int infoCount = 10;
+
+	private static final int CHAT_POLL_MS = 100000;
+	private final ChatLinkAsync chatLink = GWT.create(ChatLink.class);
+
+	/**
+	 * This is the graph visualization as an object
+	 */
+	private JavaScriptObject theGraph;
+
+	// User state
+	boolean loggedIn;
+	
+	int MAX_IMAGE_HEIGHT = 400;
+	int MAX_IMAGE_WIDTH = 300;
+
+	// Photo Grid
+	private Grid photos;
+	private int firstPhoto = 0;
+	private int photoCount = 5;
+	private int photoPos = 0;
+	private LinkedList<Integer> pids;
+
+	private String xml;
+
+	/**
+	 * The message displayed to the user when the server cannot be reached or
+	 * returns an error.
+	 */
+	private static final String SERVER_ERROR = "An error occurred while "
+		+ "attempting to contact the server. Please check your network "
+		+ "connection and try again.";
+
+	/**
+	 * Create a remote service proxy to talk to the server-side Greeting
+	 * service.
+	 */
+
+	private final PhotoSearchAsync searchRoutines = GWT.create(PhotoSearch.class);
+
+	private final DBRoutinesAsync dbRoutines = GWT.create(DBRoutines.class);
+
+	private final XQRoutinesAsync xqRoutines = GWT.create(XQRoutines.class);
+
+	// private final DisplayPhotoSearch dps=new DisplayPhotoSearch(dbRoutines);
+
+	private final ServiceDispatcherAsync dispatcher = GWT
+	.create(ServiceDispatcher.class);
+
+	/**
+	 * This is the entry point method.
+	 */
+	public void onModuleLoad() {
+
+	xqRoutines.readXML(new AsyncCallback<String>() {
+		public void onFailure(Throwable caught) {
+			//System.out.print("login: "+loginToServer+" pwd: "+passwordToServer);
+			// Show the RPC error message to the user
+			System.out.print(caught.getMessage());
+		}
+		public void onSuccess(String result) {
+			xml = result;
+		}
+		});
+
+		ensureBGServices();
+		trackChat();
+		loggedIn = false;
+		final Button sendButton = new Button("Send");
+		final TextBox nameField = new TextBox();
+		nameField.setText("user id or email");
+
+		final TextBox passwordField = new TextBox();
+		passwordField.setText("password");
+
+		final Label errorLabel = new Label();
+
+		// We can add style names to widgets
+		sendButton.addStyleName("sendButton");
+
+		// Add the nameField and sendButton to the RootPanel
+		// Use RootPanel.get() to get the entire body element
+		RootPanel.get("nameFieldContainer").add(nameField);
+		RootPanel.get("passwordFieldContainer").add(passwordField);
+		RootPanel.get("sendButtonContainer").add(sendButton);
+		RootPanel.get("errorLabelContainer").add(errorLabel);
+
+		// Focus the cursor on the name field when the app loads
+		nameField.setFocus(true);
+		nameField.selectAll();
+
+		// Create the popup dialog box
+		final DialogBox dialogBox = new DialogBox();
+		dialogBox.setText("Remote Procedure Call");
+		dialogBox.setAnimationEnabled(true);
+		final Button closeButton = new Button("Close");
+		// We can set the id of a widget by accessing its Element
+		closeButton.getElement().setId("closeButton");
+		final Label loginToServerLabel = new Label();
+		final HTML serverResponseLabel = new HTML();
+		VerticalPanel dialogVPanel = new VerticalPanel();
+		dialogVPanel.addStyleName("dialogVPanel");
+		dialogVPanel.add(new HTML("<b>Welcome:</b>"));
+		dialogVPanel.add(loginToServerLabel);
+		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
+		dialogVPanel.add(serverResponseLabel);
+		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.add(closeButton);
+		dialogBox.setWidget(dialogVPanel);
+
+		// Add a handler to close the DialogBox
+		closeButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				dialogBox.hide();
+				sendButton.setEnabled(true);
+				sendButton.setFocus(true);
+				if (loggedIn)
+					loadLoggedIn();
+			}
+		});
+
+		// Create a handler for the sendButton and nameField
+		class MyHandler implements ClickHandler, KeyUpHandler {
+
+			// Fired when the user clicks on the sendButton.
+
+			public void onClick(ClickEvent event) {
+				authenticateUser();
+			}
+
+			// Fired when the user types in the nameField.
+
+			public void onKeyUp(KeyUpEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					authenticateUser();
+				}
+			}
+
+			private void authenticateUser() {
+				// First, we validate the input.
+				errorLabel.setText("");
+				final String loginToServer = nameField.getText();
+				if (!FieldVerifier.isValidName(loginToServer)) {
+					errorLabel.setText("Please enter at least four characters");
+					return;
+				}
+
+				final String passwordToServer = passwordField.getText();
+				/*
+                                if (!FieldVerifier.isValidName(passwordToServer)) {
+					errorLabel.setText("Please enter at least four characters");
+					return;
+				}*/
+
+				// Then, we send the input to the server.
+				sendButton.setEnabled(false);
+				loginToServerLabel.setText(loginToServer);
+
+				serverResponseLabel.setText("");
+				dbRoutines.authenticate(loginToServer, passwordToServer,
+						new AsyncCallback<String>() {
+					public void onFailure(Throwable caught) {
+						// System.out.print("login: "+loginToServer+" pwd: "+passwordToServer);
+						// Show the RPC error message to the user
+						dialogBox
+						.setText("Remote Procedure Call - Failure");
+						serverResponseLabel
+						.addStyleName("serverResponseLabelError");
+						// System.out.println("I'm here");
+						serverResponseLabel.setHTML(SERVER_ERROR);
+						dialogBox.center();
+						System.out.print(caught.getMessage());
+						closeButton.setFocus(true);
+					}
+
+					public void onSuccess(String result) {
+						if (result.isEmpty()) {
+							dialogBox
+							.setText("Oops! You do not exist!");
+						} else {
+							loggedIn = true;
+							// Parse result
+							String[] tokens = result.split("#");
+							// System.out.println(result);
+							uid = Integer.valueOf(tokens[0]);
+							f_name = tokens[1];
+							l_name = tokens[2];
+							dob = tokens[3];
+							email = tokens[4];
+							gender = tokens[5];
+							addr = tokens[6];
+
+							// Initialize complex data struct
+							institutions = new LinkedList<String>();
+							attributes = new HashMap<String, String>();
+							advisees = new LinkedList<String>();
+							posting = new PhotoPosting(dbRoutines, uid);
+							rating = new PhotoRate(dbRoutines, uid);
+							pids = new LinkedList<Integer>();
+							pictures = new LinkedList<Pic>();
+
+							dialogBox.setText("Welcome to PSQUARE!");
+							serverResponseLabel.setHTML(f_name
+									+ "! How are you!?");
+						}
+						serverResponseLabel
+						.removeStyleName("serverResponseLabelError");
+
+						dialogBox.center();
+						closeButton.setFocus(true);
+					}
+				});
+
+			}// end of authenticateUser
+		}
+
+		// Add a handler to send the name to the server
+		MyHandler handler = new MyHandler();
+		sendButton.addClickHandler(handler);
+		nameField.addKeyUpHandler(handler);
+		passwordField.addKeyUpHandler(handler);
+
+	}// end of onModuleLoad
+
+	HorizontalPanel hp;
+
+	private void loadLoggedIn() {
+		RootPanel.get("nameFieldContainer").clear();
+		RootPanel.get("passwordFieldContainer").clear();
+		RootPanel.get("sendButtonContainer").clear();
+		RootPanel.get("errorLabelContainer").clear();
+
+		// Pop-out Setup
+		// Create the popup dialog box
+		final DialogBox dialogBox = new DialogBox();
+		dialogBox.setText("Remote Procedure Call");
+		dialogBox.setAnimationEnabled(true);
+		final Button closeButton = new Button("Close");
+		// We can set the id of a widget by accessing its Element
+		closeButton.getElement().setId("closeButton");
+		final Label loginToServerLabel = new Label();
+		final HTML serverResponseLabel = new HTML();
+		VerticalPanel dialogVPanel = new VerticalPanel();
+		dialogVPanel.addStyleName("dialogVPanel");
+		dialogVPanel.add(new HTML("<b>Welcome:</b>"));
+		dialogVPanel.add(loginToServerLabel);
+		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
+		dialogVPanel.add(serverResponseLabel);
+		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.add(closeButton);
+		dialogBox.setWidget(dialogVPanel);
+
+		// Create Photo post button
+		class postPhotoHandler implements ClickHandler {
+			public void onClick(ClickEvent event) {
+				dbRoutines.getPID(new AsyncCallback<Integer>() {
+					public void onFailure(Throwable caught) {
+						dialogBox.setText("Remote Procedure Call - Failure");
+						serverResponseLabel
+						.addStyleName("serverResponseLabelError");
+						serverResponseLabel.setHTML(SERVER_ERROR);
+						dialogBox.center();
+						closeButton.setFocus(true);
+
+					}
+
+					public void onSuccess(Integer result) {
+						posting.post(result);
+					}
+				});
+			}// end of onClick
+		} // end of postPhotoHandler
+
+		Button postButton = new Button("Post Photo");
+		RootPanel.get("photopost").add(postButton);
+		postPhotoHandler handler = new postPhotoHandler();
+		postButton.addClickHandler(handler);
+
+		// Create Photo Search
+		final Button searchButton = new Button("Search");
+		final TextBox searchField = new TextBox();
+		searchField.setText("enter tag word");
+		RootPanel.get("tagFieldContainer").add(searchField);
+		RootPanel.get("photosearchContainer").add(searchButton);
+		//final VerticalPanel vp = new VerticalPanel();
+		//final DockPanel dp = new DockPanel();
+		final HorizontalPanel hori = new HorizontalPanel();
+		final DialogBox sdb = new DialogBox();
+		sdb.setText("Search Results");
+		//sdb.setWidget(dp);
+		//dp.setSpacing(5);
+
+		class searchHandler implements ClickHandler, KeyUpHandler{
+			public void onClick(ClickEvent event){
+				search();
+			}
+			public void onKeyUp(KeyUpEvent event){
+				if(event.getNativeKeyCode()==KeyCodes.KEY_ENTER) 
+					search();
+			}
+
+			private void search(){
+				//errorLabel.setText("");
+				final String searchKey = searchField.getText();
+				//dp.clear();
+				hori.clear();
+				//searchButton.setEnabled(false);
+				serverResponseLabel.setText("");
+				
+				searchRoutines.lookupTag(searchKey, new AsyncCallback<Map<Integer, String>>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						dialogBox
+						.setText("Remote Procedure Call - Failure");
+						serverResponseLabel
+						.addStyleName("serverResponseLabelError");
+						// System.out.println("I'm here");
+						serverResponseLabel.setHTML(SERVER_ERROR);
+						dialogBox.center();
+						System.out.print(caught.getMessage());
+						closeButton.setFocus(true);
+						//searchButton.setEnabled(true);
+					}
+
+					@Override
+					public void onSuccess(Map<Integer, String> result) {
+						Button close = new Button("Close");
+						close.addClickHandler(new ClickHandler(){
+							@Override
+							public void onClick(ClickEvent event) {
+								sdb.hide();
+							}
+						});
+						
+						// display 5 results at once only
+						int cnt = 0;
+						if(result.isEmpty()){
+							//dp.add(close, DockPanel.SOUTH);
+							Label l = new Label("No matched search results!");
+						    hori.add(l);
+							hori.add(close);
+						    //HTML msg = new HTML("<center></center>",true);
+							sdb.setWidget(hori);
+							sdb.center();
+							return;
+						}
+						
+						System.out.println("reached here!");
+						for(final Map.Entry<Integer, String> e: result.entrySet()){
+							System.out.println("cnt:"+cnt);
+							if(cnt>=5) break;
+							System.out.println(e.getValue());
+							final Image img = new Image(e.getValue());
+							// enable rating 
+							img.addClickHandler(new ClickHandler() {
+								public void onClick(ClickEvent event) {
+									rating.rate(e.getKey(), e.getValue());
+								}
+							});
+							img.getElement();
+							img.addLoadHandler(new LoadHandler(){
+								public void onLoad(LoadEvent event){
+						            Element element = (Element) event.getRelativeElement();
+							          if (element == img.getElement()) {
+							                int originalHeight = img.getOffsetHeight();
+							                int originalWidth = img.getOffsetWidth();
+							                if (originalHeight > originalWidth) {
+							                    img.setHeight(MAX_IMAGE_HEIGHT + "px");
+							                } else {
+							                    img.setWidth(MAX_IMAGE_WIDTH + "px");
+							                }
+							            }
+
+								}
+							});
+							hori.insert(img, cnt);							
+							System.out.println(e.getKey());
+							cnt++;
+						}// end of for
+						hori.add(close);
+						sdb.setWidget(hori);
+						sdb.center();
+						return;
+					} // end of onSuccess
+				}); // end of lookupTag
+			} // end of search
+		} // end of searchHandler
+		searchHandler shandler = new searchHandler();
+		searchButton.addClickHandler(shandler);
+		searchField.addKeyUpHandler(shandler);
+
+		// Display Personal Profile
+		info = new Grid(infoCount + 1, 1);
+		HorizontalPanel hp1 = new HorizontalPanel();
+		info.setWidget(infoCount, 0, hp1);
+		RootPanel.get("infoGrid").add(info);
+
+		info.setHTML(0, 0, "<h4>Name: " + f_name + " " + l_name + "</h4>");
+		info.setHTML(1, 0, "<h4>DOB: " + dob + "</h4>");
+		info.setHTML(2, 0, "<h4>Email: " + email + "</h4>");
+		info.setHTML(3, 0, "<h4>Gender: " + gender + "</h4>");
+		info.setHTML(4, 0, "<h4>Address: " + addr + "</h4>");
+
+		visualizeUser();
+
+		dbRoutines.getInstitutions(uid, new AsyncCallback<List<String>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				dialogBox.setText("Remote Procedure Call - Failure");
+				serverResponseLabel.addStyleName("serverResponseLabelError");
+				serverResponseLabel.setHTML(SERVER_ERROR);
+				dialogBox.center();
+				closeButton.setFocus(true);
+			}
+
+			@Override
+			public void onSuccess(List<String> result) {
+				if (result.isEmpty()) {
+					info.setHTML(5, 0, "<h3>Academic Institutions: None</h3>");
+				} else {
+					StringBuffer b = new StringBuffer();
+
+					for (String i : result) {
+						institutions.add(i);
+						// System.out.println("added to institutions: "+i);
+						b.append(i + ",");
+					}
+					b.deleteCharAt(b.length() - 1);
+					info.setHTML(5, 0,
+							"<h3>Academic Institutions:" + b.toString()
+							+ "</h3>");
+				}
+
+			} // end of onSuccess
+		}); // end of getInstitutions
+
+		dbRoutines.getTypeAttributes(uid,
+				new AsyncCallback<HashMap<String, String>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				dialogBox.setText("Remote Procedure Call - Failure");
+				serverResponseLabel
+				.addStyleName("serverResponseLabelError");
+				serverResponseLabel.setHTML(SERVER_ERROR);
+				dialogBox.center();
+				closeButton.setFocus(true);
+			}
+
+			@Override
+			public void onSuccess(HashMap<String, String> result) {
+				int attr_cnt = 6;
+
+				for (Map.Entry<String, String> entry : result
+						.entrySet()) {
+					String key = entry.getKey();
+					String val = entry.getValue();
+
+					try {
+						Integer.parseInt(key);
+						advisees.add(val);
+					} catch (NumberFormatException e) {
+
+						attributes.put(key, val);
+						info.setHTML(attr_cnt, 0, "<h3>" + key + ": "
+								+ val + "</h3>");
+						attr_cnt++;
+					}
+				}// end of foreach loop
+
+				// System.out.println("map size: "+attributes.size());
+
+				if (!advisees.isEmpty()) {
+					StringBuffer sbuf = new StringBuffer();
+					for (String s : advisees) {
+						sbuf.append(s + ",");
+					}
+					// get rid of punctuation
+					sbuf.deleteCharAt(sbuf.length() - 1);
+					info.setHTML(attr_cnt, 0,
+							"<h3>Advisees: " + sbuf.toString()
+							+ "</h3>");
+				}
+
+			}// end of onSuccess
+		}); // end of getTypeAttributes
+
+		// Setup photo grid for displaying relevant photo
+		photos = new Grid(photoCount + 1, 1);
+		hp = new HorizontalPanel();
+		photos.setWidget(photoCount, 0, hp);
+		RootPanel.get("photoDisplayContainer").add(photos);
+
+		dbRoutines.getPhotosByRelevanceCached(uid,
+				new AsyncCallback<List<Integer>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				dialogBox.setText("Remote Procedure Call - Failure");
+				serverResponseLabel
+				.addStyleName("serverResponseLabelError");
+				serverResponseLabel.setHTML(SERVER_ERROR);
+				dialogBox.center();
+				closeButton.setFocus(true);
+			}
+
+			@Override
+			public void onSuccess(List<Integer> result) {
+				System.out.println("list size: " + result.size());
+				loadPhotoToPanel(result);
+			}
+
+		});
+
+
+	} // end of loadLoggedIn
+
+	int cnt = 0;
+	int pid = 0;
+	int tmp = 0;
+	String url;
+
+	public void loadPhotoToPanel(List<Integer> li) {
+		cnt = 0;
+		for (; cnt < photoCount; cnt++) {
+			pid = li.get(cnt);
+			pictures.clear();
+			//System.out.println("loop var: " + cnt);
+			dbRoutines.getURL(pid, new AsyncCallback<String>() {
+				int cbpid = pid;
+
+				@Override
+				public void onFailure(Throwable caught) {
+					System.out.println("can't load photo");
+				}
+
+				@Override
+				public void onSuccess(final String result) {
+
+					Image im = new Image(result);
+					System.out.println(cbpid + ':' + result);
+
+					im.addClickHandler(new ClickHandler() {
+						public void onClick(ClickEvent event) {
+							rating.rate(cbpid, result);
+						}
+					});
+					hp.add(im);
+					Pic p = new Pic(pid, result);
+					pictures.add(p);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Visualize the user and his/her neighbors
+	 * 
+	 */
+
+	public void visualizeUser() {
+		// Request the person and his/her neighbors
+
+		xqRoutines.getPersonAndNeighbors(xml, uid, new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Unable to execute XQuery");
+
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				try {
+					JSONObject x = XMLandJSON.getJsonForUser(XMLandJSON
+							.parseXML(result));
+					if (x != null) {
+						System.out.println("this is x=" + x.toString());
+
+						theGraph = FriendVisualization.createGraph(
+								x.toString(), Pp.this);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		// Request the person's photos
+		// loadPhotos();
+		// displayUserContent();
+
+	}
+
+	/**
+	 * Incrementally redraw graph for the selected person. Also update the left
+	 * and right-hand panes
+	 * 
+	 * @param result
+	 */
+	public void drawNodeAndNeighbors(int person) {
+		// currentPerson = person;
+		// firstPhoto = 0;
+		System.out.println("Requesting data for " + person);
+		xqRoutines.getPersonAndNeighbors(xml, person,
+				new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert(SERVER_ERROR);
+
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				com.google.gwt.xml.client.Node n = XMLandJSON
+				.parseXML(result);
+
+				if (n != null) {
+					FriendVisualization.addToGraph(theGraph, XMLandJSON
+							.getJsonForUser(n).toString());
+				}
+			}
+
+		});
+		// loadPhotos();
+		// displayUserContent();
+	}
+
+	public void ensureBGServices() {
+		dispatcher.startServices(new AsyncCallback<Integer>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.out.println("Couldn't verify background services.");
+
+			}
+
+			@Override
+			public void onSuccess(Integer result) {
+				System.out.println("Background services verified as present.");
+			}
+
+		});
+	}
+
+	public void publichChat(String msg) {
+		AsyncCallback<Integer> cb = new AsyncCallback<Integer>() {
+
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void onSuccess(Integer result) {
+				// TODO Auto-generated method stub
+
+			}
+
+		};
+		chatLink.publish(msg, cb);
+	}
+
+	public void trackChat() {
+		// define what we want to do
+		final AsyncCallback<List<String>> cb = new AsyncCallback<List<String>>() {
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
+
+			public void onSuccess(List<String> result) {
+				// TODO Auto-generated method stub
+			}
+		};
+
+		// run this task inside a timer
+		com.google.gwt.user.client.Timer t = new com.google.gwt.user.client.Timer() {
+			public void run() {
+				chatLink.getMessagesSince(10, cb);
+				Window.alert("Nifty, eh?");
+
+			}
+		};
+
+		t.scheduleRepeating(CHAT_POLL_MS);
+	}
+
+	private class Pic {
+		int pid;
+		String url;
+
+		Pic(int id, String l) {
+			this.pid = id;
+			this.url = l;
+		}
+	}
+}

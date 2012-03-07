@@ -1,0 +1,26 @@
+CIS550 Final Project
+Group 5
+
+Seth Shannin
+Alen Kubati
+Kent Chen
+Daniel Cong
+
+Thanks to Alen for instructions below:
+
+Dependencies:
+zorba - not installed on eniac...
+zorba-security-module (for md5 hash function)
+python-mysqldb
+
+Data: To reset the database with a clean data image (our group's data and the
+import data from the 3 other groups given to us), run the import.sh script
+in the top-level directory.
+
+Running the project:
+As with the distributed homeworks, first please intsall the three packages 
+listed above (as well as all the eclipse plugins specified for the homeworks).
+Then open eclipse and import 'eclipse_import.zip' as a project. After that,
+you should be good to go.
+
+

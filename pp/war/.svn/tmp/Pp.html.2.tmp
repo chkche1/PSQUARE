@@ -1,0 +1,196 @@
+<!doctype html>
+<!-- The DOCTYPE declaration above will set the     -->
+<!-- browser's rendering engine into                -->
+<!-- "Standards Mode". Replacing this declaration   -->
+<!-- with a "Quirks Mode" doctype is not supported. -->
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <link type="text/css" rel="stylesheet" href="Pp.css">
+
+
+    <title>Welcome to PSquare</title>
+    
+    <!--                                           -->
+    <!-- This script loads your compiled module.   -->
+    <!-- If you add any GWT meta tags, they must   -->
+    <!-- be added before this line.                -->
+    <!--                                           -->
+    <script type="text/javascript" language="javascript" src="pp/pp.nocache.js"></script>
+    
+    <!-- CSS Files -->
+	<link type="text/css" href="base.css" rel="stylesheet" />
+	<link type="text/css" href="Hypertree.css" rel="stylesheet" />
+
+	<!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
+
+	<!-- JIT Library File -->
+	<script language="javascript" type="text/javascript" src="jit.js"></script>
+    
+  </head>
+
+  <!--                                           -->
+  <!-- The body can have arbitrary html, or      -->
+  <!-- you can leave the body empty if you want  -->
+  <!-- to create a completely dynamic UI.        -->
+  <!--                                           -->
+  <body>
+
+    <!-- OPTIONAL: include this if you want history support -->
+    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+    
+    <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+    <noscript>
+      <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+        Your web browser must have JavaScript enabled
+        in order for this application to display correctly.
+      </div>
+    </noscript>
+
+	<div id="mainPage">
+		<div id="topDiv">
+			<div id="topBanner"> TOP BANNER
+			</div>
+			<div id="updateContainer"> UPDATES
+			</div>
+		</div> <!-- end topDiv -->
+		<div id="bottomDiv">
+			<div id="leftBar">
+			
+				<div id="infoGrid">INFOGRID
+				</div>
+				<div id="chatBox">CHATBOX
+				</div>
+			
+			
+			</div><!-- end left panel div -->
+			
+			<div id="rightTwoPanels">
+				<div id="centerPanel">
+					<div id="visualizerContainer">JIT
+					</div>
+					
+					<div id="centerPanelBottom">
+					
+						<div id="friendListContainer">friendList
+						</div>
+					
+						<div id="recommendationContainer">RECOMMENDATIONS
+						</div>
+					
+					</div>  <!-- endCenterPanelBottom div -->
+				
+				</div><!-- end center panel div -->
+				
+				<div id="rightBar">
+				
+					<div id="relevanceContainer">RELEVANCE??
+					</div>
+				
+					<div id="photoPostContainer">POST SHIT
+					</div>
+					
+					<div id="tagFieldContainer">TAGS
+					</div>
+				
+					<div id="photoSearchContainer">SEARCH HERE
+					</div>
+				
+				</div><!-- end right bar div -->
+											
+			</div><!-- right two panels -->
+			
+		</div><!-- end bottom Panel div -->
+	<!---	
+		-->
+	</div> <!-- end mainPage div -->
+	
+	<div id="photoDisplayContainer">
+		</div>
+	
+<<<<<<< .mine
+	<table id="mainpage" style="width:1280px; height: 768px">
+		<tr style="height: 10%">
+			<td colspan="3" style="background-color:#FFA500">PSQUARE</td>
+		</tr>
+		<tr style="height: 20%">
+			<td colspan="3" id="updateContainer" style="background-color:#FFA5FF">update</td>
+		</tr>
+		<tr style="height: 70%">
+			<td style="width: 25%">
+				<table style="height:100%;width:100%">
+					<tr style="height: 70%">
+						<td>
+							<table id="infoGrid" style="background-color:#FF0000;width=100%">infogrid</table>
+						</td>
+					</tr>
+					<tr style="height: 30%">
+						<td id="chatboxContainer" style="background-color:#00FF00;width=100%">chatbox</td>
+					</tr>
+				</table>
+			</td>
+			<td style="width:50%">
+				<table style="width: 100%;height:100%">
+					<tr  style="height: 60%; width=100%">
+						<td colspan="2" id="visualizerContainer" style="background-color:#0000FF;width:100%">
+							<table id= "table" align="center" style="height: 100%,width:100%">
+      							<tr >
+        							<td colspan="2" style="font-weight:bold;">Please enter your logins:</td>        
+      							</tr>
+      							<tr >
+        							<td id="nameFieldContainer"></td>
+        							<td id="passwordFieldContainer"></td>
+        							<td id="sendButtonContainer"></td>
+      							</tr>
+      							<tr >
+        							<td colspan="2" style="color:red;" id="errorLabelContainer"></td>
+      							</tr>
+							<div id="infovis"></div>
+    						</table>
+						</td>
+					</tr>
+					<tr style="height: 40%; width=100%">
+						<td id="friendlistContainer" style="width: 50%;background-color:#FF0000">friendlist</td>
+						<td id="recommendContainer" style="width: 50%;background-color:#FFFF00">recommend</td>
+					</tr>
+				</table>
+			</td>
+			<td style="width:25%">
+				<table style="height:100%;width:100%">
+					<tr style="height: 80%;width=100%">
+						<td id="relevanceContainer" style="background-color:#0000FF;width=:100%">relevance</td>
+					</tr>
+					<tr style="height: 10%;width=100%">
+						<td id="photoPostContainer" style="background-color:#0000FF;width=:100%"><grid id="photopost"></grid></td>
+					</tr>
+					<tr style="height: 10%;width=100%">
+						<td id="tagFieldContainer"></td>
+						<td id="photoSearchContainer" style="background-color:#0000FF;width=:100%">search</td>
+					</tr>
+				</table>
+			</td>
+		</tr>		
+	</table>
+	
+=======
+>>>>>>> .r137
+	<table id= "table" align="center">
+      <tr>
+        <td colspan="2" style="font-weight:bold;">Please enter your login info:</td>        
+      </tr>
+      <tr>
+        <td id="nameFieldContainer"></td>
+        <td id="passwordFieldContainer"></td>
+        <td id="sendButtonContainer"></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="color:red;" id="errorLabelContainer"></td>
+      </tr>
+
+      
+    </table>
+	
+  </body>
+</html>

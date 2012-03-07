@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 (http://www.altova.com) by daniel (upenn) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="AcademicInstitution">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="userid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="institution" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Advise">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="profid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="sid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Circle">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="userid" default="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="name">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+							<xs:minLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element ref="CirclePrivacy" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="FriendRelation" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="Circle_PrimaryKey_1">
+			<xs:selector xpath="."/>
+			<xs:field xpath="userid"/>
+			<xs:field xpath="name"/>
+		</xs:key>
+		<xs:keyref name="CirclePrivacy_ForeignKey_2" refer="Circle_PrimaryKey_1">
+			<xs:selector xpath="CirclePrivacy"/>
+			<xs:field xpath="userid"/>
+			<xs:field xpath="circle"/>
+		</xs:keyref>
+		<xs:keyref name="FriendRelation_ForeignKey_1" refer="Circle_PrimaryKey_1">
+			<xs:selector xpath="FriendRelation"/>
+			<xs:field xpath="userid"/>
+			<xs:field xpath="circle"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="CirclePrivacy">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="userid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="circle" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="FriendRelation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="userid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="friendid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="circle" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Photo">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pid">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="userid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="url">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="120"/>
+							<xs:minLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="privacy" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element ref="CirclePrivacy" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Rating" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="UserPrivacy" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="Photo_PrimaryKey_1">
+			<xs:selector xpath="."/>
+			<xs:field xpath="pid"/>
+		</xs:key>
+		<xs:keyref name="CirclePrivacy_ForeignKey_1" refer="Photo_PrimaryKey_1">
+			<xs:selector xpath="CirclePrivacy"/>
+			<xs:field xpath="pid"/>
+		</xs:keyref>
+		<xs:keyref name="Rating_ForeignKey_1" refer="Photo_PrimaryKey_1">
+			<xs:selector xpath="Rating"/>
+			<xs:field xpath="pid"/>
+		</xs:keyref>
+		<xs:keyref name="UserPrivacy_ForeignKey_1" refer="Photo_PrimaryKey_1">
+			<xs:selector xpath="UserPrivacy"/>
+			<xs:field xpath="pid"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="PrivacyType">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="privacy">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+							<xs:minLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element ref="Photo" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="PrivacyType_PrimaryKey_1">
+			<xs:selector xpath="."/>
+			<xs:field xpath="privacy"/>
+		</xs:key>
+		<xs:keyref name="Photo_ForeignKey_2" refer="PrivacyType_PrimaryKey_1">
+			<xs:selector xpath="Photo"/>
+			<xs:field xpath="privacy"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="Professor">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="userid" default="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="research_area" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="room_id" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element ref="Advise" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Student" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="Professor_PrimaryKey_1">
+			<xs:selector xpath="."/>
+			<xs:field xpath="userid"/>
+		</xs:key>
+		<xs:keyref name="Advise_ForeignKey_1" refer="Professor_PrimaryKey_1">
+			<xs:selector xpath="Advise"/>
+			<xs:field xpath="profid"/>
+		</xs:keyref>
+		<xs:keyref name="Student_ForeignKey_2" refer="Professor_PrimaryKey_1">
+			<xs:selector xpath="Student"/>
+			<xs:field xpath="advisorid"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="Rating">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="userid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="score" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Student">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="userid" default="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="advisorid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="year" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element ref="Advise" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="Student_PrimaryKey_1">
+			<xs:selector xpath="."/>
+			<xs:field xpath="userid"/>
+		</xs:key>
+		<xs:keyref name="Advise_ForeignKey_2" refer="Student_PrimaryKey_1">
+			<xs:selector xpath="Advise"/>
+			<xs:field xpath="sid"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="UserPrivacy">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="userid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="friendid" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Users">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="userid">
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="2147483647"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="first_name" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="last_name" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="dob" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:date">
+							<xs:pattern value="\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}"/>
+							<xs:minInclusive value="1000-01-01"/>
+							<xs:maxInclusive value="9999-12-31"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="email" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="gender" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="address" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="30"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="password" nillable="true" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element ref="AcademicInstitution" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Circle" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="FriendRelation" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Photo" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Professor" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Rating" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Student" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="UserPrivacy" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="Users_PrimaryKey_1">
+			<xs:selector xpath="."/>
+			<xs:field xpath="userid"/>
+		</xs:key>
+		<xs:keyref name="AcademicInstitution_ForeignKey_1" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="AcademicInstitution"/>
+			<xs:field xpath="userid"/>
+		</xs:keyref>
+		<xs:keyref name="Circle_ForeignKey_1" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="Circle"/>
+			<xs:field xpath="userid"/>
+		</xs:keyref>
+		<xs:keyref name="FriendRelation_ForeignKey_2" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="FriendRelation"/>
+			<xs:field xpath="friendid"/>
+		</xs:keyref>
+		<xs:keyref name="Photo_ForeignKey_1" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="Photo"/>
+			<xs:field xpath="userid"/>
+		</xs:keyref>
+		<xs:keyref name="Professor_ForeignKey_1" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="Professor"/>
+			<xs:field xpath="userid"/>
+		</xs:keyref>
+		<xs:keyref name="Rating_ForeignKey_2" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="Rating"/>
+			<xs:field xpath="userid"/>
+		</xs:keyref>
+		<xs:keyref name="Student_ForeignKey_1" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="Student"/>
+			<xs:field xpath="userid"/>
+		</xs:keyref>
+		<xs:keyref name="UserPrivacy_ForeignKey_2" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="UserPrivacy"/>
+			<xs:field xpath="userid"/>
+		</xs:keyref>
+		<xs:keyref name="UserPrivacy_ForeignKey_3" refer="Users_PrimaryKey_1">
+			<xs:selector xpath="UserPrivacy"/>
+			<xs:field xpath="friendid"/>
+		</xs:keyref>
+	</xs:element>
+</xs:schema>

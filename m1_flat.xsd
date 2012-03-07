@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 (http://www.altova.com) by daniel (upenn) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="INTEGER">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="-2147483648"/>
+			<xs:maxInclusive value="2147483647"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VARCHAR_255">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="date">
+		<xs:restriction base="xs:date">
+			<xs:minInclusive value="1000-01-01"/>
+			<xs:maxInclusive value="9999-12-31"/>
+			<xs:pattern value="\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CHAR_255">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="RowType_test__AcademicInstitution">
+		<xs:sequence>
+			<xs:element name="userid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="institution" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__Advise">
+		<xs:sequence>
+			<xs:element name="profid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="sid" type="INTEGER" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__Circle">
+		<xs:sequence>
+			<xs:element name="userid" type="INTEGER" default="0"/>
+			<xs:element name="name" type="VARCHAR_255"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__CirclePrivacy">
+		<xs:sequence>
+			<xs:element name="pid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="userid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="circle" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__FriendRelation">
+		<xs:sequence>
+			<xs:element name="userid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="friendid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="circle" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__Photo">
+		<xs:sequence>
+			<xs:element name="pid" type="INTEGER"/>
+			<xs:element name="userid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="url" type="VARCHAR_255"/>
+			<xs:element name="privacy" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__PrivacyType">
+		<xs:sequence>
+			<xs:element name="privacy" type="VARCHAR_255"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__Professor">
+		<xs:sequence>
+			<xs:element name="userid" type="INTEGER" default="0"/>
+			<xs:element name="research_area" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+			<xs:element name="room_id" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__Rating">
+		<xs:sequence>
+			<xs:element name="pid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="userid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="score" type="INTEGER" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__Student">
+		<xs:sequence>
+			<xs:element name="userid" type="INTEGER" default="0"/>
+			<xs:element name="advisorid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="year" type="INTEGER" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__UserPrivacy">
+		<xs:sequence>
+			<xs:element name="pid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="userid" type="INTEGER" nillable="true" minOccurs="0"/>
+			<xs:element name="friendid" type="INTEGER" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RowType_test__Users">
+		<xs:sequence>
+			<xs:element name="userid" type="INTEGER"/>
+			<xs:element name="first_name" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+			<xs:element name="last_name" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+			<xs:element name="dob" type="date" nillable="true" minOccurs="0"/>
+			<xs:element name="email" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+			<xs:element name="gender" type="CHAR_255" nillable="true" minOccurs="0"/>
+			<xs:element name="address" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+			<xs:element name="password" type="VARCHAR_255" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__AcademicInstitution">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__AcademicInstitution" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__Advise">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__Advise" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__Circle">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__Circle" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__CirclePrivacy">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__CirclePrivacy" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__FriendRelation">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__FriendRelation" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__Photo">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__Photo" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__PrivacyType">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__PrivacyType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__Professor">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__Professor" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__Rating">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__Rating" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__Student">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__Student" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__UserPrivacy">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__UserPrivacy" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TableType_test__Users">
+		<xs:sequence>
+			<xs:element name="row" type="RowType_test__Users" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CatalogType_test">
+		<xs:all/>
+	</xs:complexType>
+	<xs:element name="test" type="CatalogType_test"/>
+</xs:schema>
